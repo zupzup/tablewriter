@@ -443,3 +443,55 @@ func TestAutoMergeRows(t *testing.T) {
 		t.Errorf("\ngot:\n%s\nwant:\n%s\n", got, want)
 	}
 }
+
+func TestClear(t *testing.T) {
+	data := [][]string{
+		[]string{"1/1/2014", "Domain name", "2233", "$10.98"},
+		[]string{"1/1/2014", "Domain name", "2233", "$10.98"},
+		[]string{"1/1/2014", "Domain name", "2233", "$10.98"},
+	}
+
+	var buf bytes.Buffer
+	table := NewWriter(&buf)
+	table.SetHeader([]string{"Date", "Description", "CV2", "Amount"})
+	table.SetFooter([]string{"This", "Is", "A", "Footer"})
+	table.AppendBulk(data)
+	table.SetBorder(true)
+	table.Clear()
+	table.Render()
+
+	want := `+------+-------------+-----+--------+
+| DATE | DESCRIPTION | CV2 | AMOUNT |
++------+-------------+-----+--------+
++------+-------------+-----+--------+
+| THIS |     IS      |  A  | FOOTER |
++------+-------------+-----+--------+
+`
+	got := buf.String()
+	if got != want {
+		t.Errorf("clearing table failed\ngot:\n%s\nwant:\n%s\n", got, want)
+	}
+}
+
+func TestClearOnlyData(t *testing.T) {
+	data := [][]string{
+		[]string{"1/1/2014", "Domain name", "2233", "$10.98"},
+		[]string{"1/1/2014", "Domain name", "2233", "$10.98"},
+		[]string{"1/1/2014", "Domain name", "2233", "$10.98"},
+	}
+
+	var buf bytes.Buffer
+	table := NewWriter(&buf)
+	table.AppendBulk(data)
+	table.SetBorder(true)
+	table.Clear()
+	table.Render()
+
+	want := `+
++
+`
+	got := buf.String()
+	if got != want {
+		t.Errorf("clearing table failed\ngot:\n%s\nwant:\n%s\n", got, want)
+	}
+}

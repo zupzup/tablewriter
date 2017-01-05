@@ -123,6 +123,15 @@ func (t Table) Render() {
 
 }
 
+// Clear clears the table by removing all lines and resetting the column sizes
+func (t *Table) Clear() {
+	t.lines = [][][]string{}
+	t.rs = make(map[int]int)
+	t.cs = make(map[int]int)
+	t.SetHeader(t.headers)
+	t.SetFooter(t.footers)
+}
+
 // Set table header
 func (t *Table) SetHeader(keys []string) {
 	t.colSize = len(keys)
